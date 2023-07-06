@@ -22,18 +22,31 @@ const products = productsFromServer.map((product) => {
   return newProduct;
 });
 
-function filterByOwner(currentProducts, userName = 'All') {
+function filterProducts(currentProducts, userName = 'All', currentQuery) {
+  let newProducts = currentProducts;
+
   if (userName !== 'All') {
-    return currentProducts.filter(product => product.user.name === userName);
+    newProducts = currentProducts
+      .filter(product => product.user.name === userName);
   }
 
-  return currentProducts;
+  if (currentQuery) {
+    newProducts = newProducts.filter((product) => {
+      const normalizedName = product.name.trim().toLowerCase();
+      const normalizedQuery = currentQuery.trim().toLowerCase();
+
+      return normalizedName.includes(normalizedQuery);
+    });
+  }
+
+  return newProducts;
 }
 
 export const App = () => {
   const [selectedUser, setSelectedUser] = useState('All');
+  const [query, setQuery] = useState('');
 
-  const filteredProducts = filterByOwner(products, selectedUser);
+  const filteredProducts = filterProducts(products, selectedUser, query);
 
   return (
 
@@ -81,7 +94,8 @@ export const App = () => {
                   type="text"
                   className="input"
                   placeholder="Search"
-                  value="qwe"
+                  value={query}
+                  onChange={event => setQuery(event.target.value)}
                 />
 
                 <span className="icon is-left">
@@ -90,11 +104,17 @@ export const App = () => {
 
                 <span className="icon is-right">
                   {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
-                  <button
-                    data-cy="ClearButton"
-                    type="button"
-                    className="delete"
-                  />
+                  {
+                    query && (
+                      <button
+                        data-cy="ClearButton"
+                        type="button"
+                        className="delete"
+                        onClick={() => setQuery('')}
+                      />
+                    )
+                  }
+
                 </span>
               </p>
             </div>
@@ -153,11 +173,18 @@ export const App = () => {
         </div>
 
         <div className="box table-container">
-          <p data-cy="NoMatchingMessage">
-            No products matching selected criteria
-          </p>
+          {
+            filteredProducts.length === 0
+              ? (
+                <p data-cy="NoMatchingMessage">
+                  No products matching selected criteria
+                </p>
+              )
+              : (
+                <ProductTable products={filteredProducts} />
+              )
+          }
 
-          <ProductTable products={filteredProducts} />
         </div>
       </div>
     </div>
