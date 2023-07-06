@@ -2,7 +2,7 @@
 import React from 'react';
 import cn from 'classnames';
 
-export const ProductTable = ({ products }) => (
+export const ProductTable = ({ products, sortField }) => (
   <table
     data-cy="ProductTable"
     className="table is-striped is-narrow is-fullwidth"
@@ -15,7 +15,12 @@ export const ProductTable = ({ products }) => (
 
             <a href="#/">
               <span className="icon">
-                <i data-cy="SortIcon" className="fas fa-sort" />
+                <i
+                  data-cy="SortIcon"
+                  className={cn('fas', {
+                    'fa-sort': sortField !== '',
+                  })}
+                />
               </span>
             </a>
           </span>

@@ -22,7 +22,16 @@ const products = productsFromServer.map((product) => {
   return newProduct;
 });
 
-function filterProducts(
+const SORT_FIELD = {
+  ID_TO_MAX: 'id to max',
+  ID_TO_MIN: 'id to min',
+  NAME_TO_MAX: 'name to max',
+  NAME_TO_MIN: 'name to min',
+  CATEGORY_TO_MAX: 'category to max',
+  CATEGORY_TO_MIN: 'category to min',
+};
+
+function filteringProducts(
   currentProducts,
   userName = 'All',
   currentQuery,
@@ -52,12 +61,25 @@ function filterProducts(
   return newProducts;
 }
 
+// function sortingProducts(currentProducts, sortingField) {
+//   const sortedProducts = [...currentProducts];
+
+//   if (sortingField) {
+//     sortedProducts.sort((product1, product2) => {
+//       switch (sortingField) {}
+//     });
+//   }
+
+//   return sortedProducts;
+// }
+
 export const App = () => {
   const [selectedUser, setSelectedUser] = useState('All');
   const [query, setQuery] = useState('');
   const [selectedCategories, setSelectedCategories] = useState([]);
+  const [sortField, setSortField] = useState('');
 
-  const filteredProducts = filterProducts(
+  const filteredProducts = filteringProducts(
     products,
     selectedUser,
     query,
@@ -203,7 +225,12 @@ export const App = () => {
                 </p>
               )
               : (
-                <ProductTable products={filteredProducts} />
+                <ProductTable
+                  products={filteredProducts}
+                  sortField={sortField}
+                  allSortFields={SORT_FIELD}
+                  toggleSortField={setSortField}
+                />
               )
           }
 
